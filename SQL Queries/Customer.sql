@@ -31,32 +31,45 @@ CREATE OR REPLACE VIEW CUSTOMERALLRESTERAUNTS AS
 	    restaurants.restaurant_id,
 	    restaurants.restaurant_name,
 	    restaurants.restaurant_city,
+        foodList.food_id,
 	    foodList.food_name,
 	    foodList.food_price,
 	    foodList.food_description,
 	    foodList.food_status
 	FROM restaurants
-	    CROSS JOIN foodList ON restaurants.restaurant_id = foodList.r
-RESTAURANT_ID; 
+	    CROSS JOIN foodList ON restaurants.restaurant_id = foodList.RESTAURANT_ID; 
 
 SELECT * FROM customerallresteraunts;
 
+-- Created procedure to make sure we don't need to make the table again and again
+
 DELIMITER //
 
-CREATE PROCEDURE GETCURRENTCITYRESTARAUNTS(IN CITY 
-VARCHAR(255)) BEGIN 
+CREATE PROCEDURE GETCURRENTCITYRESTARAUNTS(IN city VARCHAR(255)) BEGIN 
 	SELECT *
 	FROM customerallresteraunts
 	WHERE
 	    customerallresteraunts.restaurant_city = city;
 	END// 
-
-
 DELIMITER;
 
 CALL GetCurrentCityRestaraunts("Dundee");
 
--- Create Customer view for selected resteratunts
+-- Create Customer Table for selected resteratunts
+
+DELIMITER //
+CREATE PROCEDURE GetSelectedResteraunt(IN id INT UNSIGNED) BEGIN
+    SELECT         
+        foodList.food_id,
+	    foodList.food_name,
+	    foodList.food_price,
+	    foodList.food_description,
+	    foodList.food_status
+    FROM customerallresteraunts
+    WHERE customerallresteraunts.restaurant_id = id; 
+    END
+DELIMITER;
+
 
 -- Customer create new order
 
