@@ -29,8 +29,6 @@ CREATE VIEW Restuarant_food AS
     ON r.restaurant_id = foodlist. restaurant_id
     );
 
-
-
 -- Current ordered available to accept
 
 

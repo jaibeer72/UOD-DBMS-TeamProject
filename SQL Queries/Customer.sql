@@ -60,17 +60,17 @@ CALL GetCurrentCityRestaraunts("Dundee");
 DELIMITER //
 CREATE PROCEDURE GetSelectedResteraunt(IN id INT UNSIGNED) BEGIN
     SELECT         
-        foodList.food_id,
-	    foodList.food_name,
-	    foodList.food_price,
-	    foodList.food_description,
-	    foodList.food_status
+        food_id,
+	    food_name,
+	    food_price,
+	    food_description,
+	    food_status
     FROM customerallresteraunts
     WHERE customerallresteraunts.restaurant_id = id; 
     END
 DELIMITER;
 
-
+CALL GetSelectedResteraunt(0);
 -- Customer create new order
 
 -- Customer Check out
