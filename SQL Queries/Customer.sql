@@ -64,7 +64,7 @@ CREATE PROCEDURE GetSelectedResteraunt(IN id INT UNSIGNED) BEGIN
 	    food_name,
 	    food_price,
 	    food_description,
-	    food_status
+	    food_status,
     FROM customerallresteraunts
     WHERE customerallresteraunts.restaurant_id = id; 
     END
@@ -74,3 +74,27 @@ CALL GetSelectedResteraunt(0);
 -- Customer create new order
 
 -- Customer Check out
+
+-- Customer see previous orders 
+DELIMITER //
+CREATE PROCEDURE GetCustomerOrderHistory(IN id INT UNSIGNED) BEGIN
+    SELECT         
+        orders.order_id,
+		orders.order_data_time,
+		orders.restaurant_id,
+		orders.food_price,
+		orders.delivery_charge,
+		orders.order_status,
+		restaurants.restaurant_id,
+	    restaurants.restaurant_name,
+	    restaurants.restaurant_city
+    FROM orders
+	CROSS JOIN restaurants ON orders.restaurant_id = restaurants.restaurant_id
+	AND orders.customer_id = id
+	ORDER BY orders.order_data_time DESC;
+
+    END
+DELIMITER;
+
+CALL GetCustomerOrderHistory(0);
+
