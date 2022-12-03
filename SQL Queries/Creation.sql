@@ -25,6 +25,8 @@ CREATE TABLE `restaurants`(
     `restaurant_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `restaurant_name` CHAR(255) NOT NULL,
     `restaurant_city` ENUM('Dundee','London','Glasgow') NOT NULL,
+    `cuisine` ENUM('Mexican','Caribbean','Vegan','Amrican') NOT NULL,
+    `restaurant_description` VARCHAR(255) NOT NULL,
     `restaurent_userid` VARCHAR(255) NOT NULL,
     UNIQUE(`restaurent_userid`)
 );
