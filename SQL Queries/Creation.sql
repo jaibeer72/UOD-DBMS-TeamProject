@@ -1,5 +1,5 @@
 -- Active: 1666003760240@@Jaibeers-MBP.wireless.dundee.ac.uk@3306@22ac5d04
-
+CREATE DATABASE 22ac5d04;
 USE 22ac5d04;
 
 CREATE TABLE `customer`(
@@ -59,7 +59,7 @@ CREATE TABLE `orders`(
     `delivery_charge` DOUBLE(8, 2) NOT NULL,
     `order_status` ENUM('In-cart','Requested','Accepted-By-Resteraunt','Executive-Assigned','Ready-To-PickUp','Picked-Up','Delivered') NOT NULL DEFAULT 'In-cart',
     `driver_id` INT UNSIGNED NULL,
-    `commission_charges` INT UNSIGNED NOT NULL,
+    `commission_charges` DOUBLE AS (`food_price` * 0.1) NOT NULL,
     `recipe_id` INT UNSIGNED NULL,
     FOREIGN KEY(`customer_id`) REFERENCES `customer`(`customer_id`) ON DELETE SET NULL,
     FOREIGN KEY(`restaurant_id`) REFERENCES `restaurants`(`restaurant_id`) ON DELETE SET NULL,
@@ -121,9 +121,10 @@ CREATE TABLE `sales_hq_staff`(
 
 
 CREATE TABLE `OrdersFoodItem`(
-    `Order_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `OrdersFoodItem_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `Food_id` INT UNSIGNED NULL,
+    `Order_id` INT UNSIGNED NULL,
     `Quantity` INT UNSIGNED NOT NULL,
     FOREIGN KEY(`Food_id`) REFERENCES `foodList`(`food_id`) ON DELETE SET NULL,
-    FOREIGN KEY(`Order_id`) REFERENCES `orders`(`order_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(`Order_id`) REFERENCES `orders`(`order_id`) 
 );
