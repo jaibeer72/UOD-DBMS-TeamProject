@@ -78,7 +78,8 @@ CREATE PROCEDURE GETSELECTEDRESTERAUNT(IN ID INT UNSIGNED
 	FROM customerallresteraunts
 	WHERE
 	    customerallresteraunts.restaurant_id = ID;
-END
+	END 
+
 
 DELIMITER;
 
@@ -150,7 +151,7 @@ DOUBLE DETERMINISTIC BEGIN
 	SELECT
 	    SUM(foodList.food_price) INTO total
 	FROM foodList
-	WHERE foodList.food_id = (
+	WHERE foodList.food_id IN (
 	        SELECT
 	            OrdersFoodItem.Food_id
 	        FROM OrdersFoodItem
@@ -160,8 +161,10 @@ DOUBLE DETERMINISTIC BEGIN
 	RETURN total;
 	END 
 
-
 DELIMITER; 
+
+
+SELECT GETTOTALFOODPRICE(2);
 
 DELIMITER //
 
@@ -202,20 +205,30 @@ IN QUANT INT, IN CUSTOMERID INT) BEGIN
 	        COUNT(OrdersFoodItem.Food_id)
 	    FROM OrdersFoodItem
 	    WHERE
-	        OrrdersFoodItem.Order_id = curorder
+	        OrdersFoodItem.Order_id = curorder
 	        and OrdersFoodItem.Food_id = foodID
 	) = 1 THEN -- update food quantity 
 	UPDATE OrdersFoodItem
 	SET
 	    OrdersFoodItem.Quantity = quant
 	WHERE
-	    OrrdersFoodItem.Order_id = curorder
+	    OrdersFoodItem.Order_id = curorder
 	    AND OrdersFoodItem.Food_id = foodID;
+	UPDATE orders
+	SET
+	    orders.food_price = GETTOTALFOODPRICE(curorder)
+	WHERE
+	    orders.order_id = curorder;
 	--else add to food order table and update food order table.
 	ELSE
 	INSERT INTO
 	    OrdersFoodItem(Order_id, Food_id, Quantity)
 	VALUES (curOrder, foodID, quant);
+	UPDATE orders
+	SET
+	    orders.food_price = GETTOTALFOODPRICE(curorder)
+	WHERE
+	    orders.order_id = curorder;
 	END IF;
 	ELSE -- Delete order and create new order.
 	ROLLBACK;
@@ -240,7 +253,7 @@ IN QUANT INT, IN CUSTOMERID INT) BEGIN
 	        resterauntID,
 	        0.00,
 	        2.00,
-	        "In-Cart" 
+	        "In-Cart"
 	    );
 	SELECT LAST_INSERT_ID() INTO curorder;
 	INSERT INTO
@@ -258,6 +271,5 @@ END;
 DELIMITER;
 
 CALL ADDFOODITEMTOORDER(1,2,1);
-CALL ADDFOODITEMTOORDER(3,2,1);
 
-DELETE FROM orders 
+CALL ADDFOODITEMTOORDER(3,2,1);
