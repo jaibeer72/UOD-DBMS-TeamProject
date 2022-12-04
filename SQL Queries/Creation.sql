@@ -8,6 +8,7 @@ CREATE TABLE `customer`(
     `customer_city` ENUM('Dundee','London','Glasgow') NOT NULL,
     `customer_email` VARCHAR(255) NOT NULL,
     `customer_userId` VARCHAR(255) NOT NULL,
+    `customer_address` VARCHAR(255) NOT NULL,
     UNIQUE(`customer_userId`)
 );
 
@@ -23,11 +24,12 @@ CREATE TABLE `deliveryExecutive`(
 
 CREATE TABLE `restaurants`(
     `restaurant_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `restaurant_name` CHAR(255) NOT NULL,
+    `restaurant_name` VARCHAR(255) NOT NULL,
     `restaurant_city` ENUM('Dundee','London','Glasgow') NOT NULL,
     `cuisine` ENUM('Mexican','Caribbean','Vegan','Amrican') NOT NULL,
     `restaurant_description` VARCHAR(255) NOT NULL,
     `restaurent_userid` VARCHAR(255) NOT NULL,
+    `restaurant_address` VARCHAR(255) NOT NULL,
     UNIQUE(`restaurent_userid`)
 );
 
