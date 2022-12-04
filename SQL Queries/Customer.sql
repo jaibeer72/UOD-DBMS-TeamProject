@@ -78,8 +78,6 @@ CREATE PROCEDURE GETSELECTEDRESTERAUNT(IN ID INT UNSIGNED
 	WHERE
 	    customerallresteraunts.restaurant_id = ID;
 	END 
-
-
 DELIMITER;
 
 CALL GetSelectedResteraunt(1);
@@ -272,6 +270,8 @@ DELIMITER;
 CALL ADDFOODITEMTOORDER(1,2,1);
 
 CALL ADDFOODITEMTOORDER(3,2,1);
+
+-- TODO Remove food item 
 
 -- View Cart
 

@@ -57,7 +57,7 @@ CREATE TABLE `orders`(
     `restaurant_id` INT UNSIGNED NULL,
     `food_price` DOUBLE(8, 2) NOT NULL,
     `delivery_charge` DOUBLE(8, 2) NOT NULL,
-    `order_status` ENUM('In-cart','Requested','Accepted-By-Resteraunt','Executive-Assigned','Ready-To-PickUp','Picked-Up','Delivered') NOT NULL DEFAULT 'In-cart',
+    `order_status` ENUM('In-cart','Requested','Accepted-By-Resteraunt','Executive-Assigned','Ready-To-PickUp','Picked-Up','Delivered','Rejected-By-Rest','Cancled') NOT NULL DEFAULT 'In-cart',
     `driver_id` INT UNSIGNED NULL,
     `commission_charges` DOUBLE AS (`food_price` * 0.1) NOT NULL,
     `recipe_id` INT UNSIGNED NULL,
