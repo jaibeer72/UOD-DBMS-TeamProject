@@ -39,8 +39,7 @@ CREATE OR REPLACE VIEW CUSTOMERALLRESTERAUNTS AS
 	    foodList.food_description,
 	    foodList.food_status
 	FROM restaurants
-	    CROSS JOIN foodList ON restaurants.restaurant_id = foodList.R
-RESTAURANT_ID; 
+	    CROSS JOIN foodList ON restaurants.restaurant_id = foodList.RESTAURANT_ID; 
 
 SELECT * FROM customerallresteraunts;
 
@@ -83,7 +82,7 @@ CREATE PROCEDURE GETSELECTEDRESTERAUNT(IN ID INT UNSIGNED
 
 DELIMITER;
 
-CALL GetSelectedResteraunt(0);
+CALL GetSelectedResteraunt(1);
 
 -- Customer create new order
 
@@ -114,7 +113,7 @@ UNSIGNED) BEGIN
 
 DELIMITER;
 
-CALL GetCustomerOrderHistory(0);
+CALL GetCustomerOrderHistory(1);
 
 -- See Resteraunt menu.
 
@@ -148,21 +147,21 @@ DELIMITER//
 CREATE FUNCTION GETTOTALFOODPRICE(ORDERID INT) RETURNS 
 DOUBLE DETERMINISTIC BEGIN 
 	DECLARE total DOUBLE;
-	SELECT
-	    SUM(foodList.food_price) INTO total
+	SELECT SUM(foodList.food_price * OrdersFoodItem.Quantity) INTO total
 	FROM foodList
+	CROSS JOIN OrdersFoodItem ON OrdersFoodItem.food_id = foodList.food_id
 	WHERE foodList.food_id IN (
 	        SELECT
 	            OrdersFoodItem.Food_id
 	        FROM OrdersFoodItem
 	        WHERE
-	            OrdersFoodItem.Order_id = orderID
+	            OrdersFoodItem.Order_id = ORDERID
 	    );
 	RETURN total;
 	END 
 
-DELIMITER; 
 
+DELIMITER; 
 
 SELECT GETTOTALFOODPRICE(2);
 
@@ -273,3 +272,87 @@ DELIMITER;
 CALL ADDFOODITEMTOORDER(1,2,1);
 
 CALL ADDFOODITEMTOORDER(3,2,1);
+
+-- View Cart
+
+DELIMITER// 
+CREATE PROCEDURE ViewCart(IN CustomerID INT) BEGIN
+
+DECLARE m_OrderID INT;
+
+SELECT 
+   orders.order_id INTO m_OrderID
+FROM orders
+WHERE
+    orders.customer_id = CustomerID AND orders.order_status = "In-cart";
+
+SELECT 
+		foodList.food_id,
+	    foodList.food_name,
+	    foodList.restaurant_id,
+	    foodList.food_price,
+		OrdersFoodItem.Quantity,
+		(foodList.food_price * OrdersFoodItem.Quantity) AS Price
+		FROM foodList
+			CROSS JOIN OrdersFoodItem ON OrdersFoodItem.Food_id = foodList.food_id
+		WHERE OrdersFoodItem.Order_id = m_OrderID;
+
+END;
+DELIMITER;
+
+call ViewCart(1);
+-- Checkout
+
+-- Get orderID for cart
+-- check payments sucess or fail
+-- turn order to requested
+
+DELIMITER// 
+CREATE PROCEDURE Checkout(IN CustomerID INT, IN PaymentType VARCHAR(255),IN isSucessFull BOOL) BEGIN
+
+DECLARE m_OrderID INT;
+DECLARE m_ReciptID INT; 
+
+START TRANSACTION;
+
+SELECT orders.order_id INTO m_OrderID
+FROM orders
+WHERE orders.customer_id=CustomerID AND orders.order_status = "In-cart";
+
+-- Generate recipt
+
+IF isSucessFull THEN
+INSERT INTO payments(
+	payments.payment_type,
+	payments.gateway_recipt_serial,
+	payment_status,
+	payment_date_time
+)
+VALUES(
+	PaymentType,
+	(
+	    FLOOR(RAND() * (9999999 -100000 + 1)) + 100000 -- randome serial
+	),
+	"Paid",
+	NOW()
+);
+
+SELECT LAST_INSERT_ID() INTO m_ReciptID;
+
+UPDATE orders
+SET orders.recipe_id = m_ReciptID , order_status = "Requested"
+WHERE orders.order_id = m_OrderID;
+
+
+ELSE
+	ROLLBACK; 
+END IF;
+
+COMMIT;
+END;
+DELIMITER;
+
+CALL Checkout(1,"Card",true);
+
+-- Search by menu item regi
+-- Search by resteraunt name
