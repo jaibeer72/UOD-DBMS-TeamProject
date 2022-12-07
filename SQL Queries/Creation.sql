@@ -130,3 +130,7 @@ CREATE TABLE `OrdersFoodItem`(
     FOREIGN KEY(`Food_id`) REFERENCES `foodList`(`food_id`) ON DELETE SET NULL,
     FOREIGN KEY(`Order_id`) REFERENCES `orders`(`order_id`) 
 );
+
+CREATE TRIGGER CalculateCommision BEFORE INSERT ON orders FOR EACH ROW SET NEW.commission_charges = (NEW.food_price * 0.1);
+
+CREATE TRIGGER CalculateCommisionUpdate BEFORE UPDATE ON orders FOR EACH ROW SET NEW.commission_charges = (NEW.food_price * 0.1);

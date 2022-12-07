@@ -39,12 +39,15 @@ SELECT * FROM DRIVERVIEW;
 -- View available orders to accept
 
 SELECT 
+    (SELECT customer.customer_name FROM customer WHERE customer.customer_id = DRIVERVIEW.customer_id) AS CustomerName,
     (SELECT customer.customer_address FROM customer WHERE customer.customer_id = DRIVERVIEW.customer_id) AS CustomerAddress,
     (SELECT restaurants.restaurant_address FROM restaurants WHERE restaurants.restaurant_id = DRIVERVIEW.restaurant_id) As RestaurantAddress,
+    (SELECT restaurants.restaurant_name FROM restaurants WHERE restaurants.restaurant_id = DRIVERVIEW.restaurant_id) As RestaurantName,
     DRIVERVIEW.delivery_charge,
     DRIVERVIEW.order_id
     FROM DRIVERVIEW
     WHERE DRIVERVIEW.order_status = "Requested" OR DRIVERVIEW.order_status = "Ready-To-PickUp";
+
 
 
 -- Accept Order 
